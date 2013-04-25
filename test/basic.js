@@ -12,8 +12,7 @@ var test = require('tape')
 function foo (r) {
   return {
     "package.json": {name: 'foo', version:"1.0.0"},
-    "index.js": function (req, module) {
-      console.log('>foo')
+    "index.js": function (req, module, exports) {
       module.exports = r
     }
   }
@@ -30,7 +29,6 @@ function bar (r) {
         module.exports = require('./lib/bar')
     },
     "lib/bar.js": function (require, module, exports) {
-      console.log('bar')
       module.exports = r
     },
   }
@@ -47,7 +45,6 @@ function baz (r) {
       module.exports = r
     },
     "lib/baz.js": function (require, module, exports) {
-      console.log('baz')
       module.exports = require('../utils')
     }
   }

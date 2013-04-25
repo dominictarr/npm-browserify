@@ -1,5 +1,5 @@
 var path = require('path')
-var extensions = ['js', 'json']
+var extensions = ['js']
 
 function nonRelative(req) {
   return req[0] !== '/' && req[0] !== '.'
@@ -7,7 +7,6 @@ function nonRelative(req) {
 
 function resolve(files, name, from, pkg) {
   var dir = path.dirname(from)
-  console.log('resolve', name, Object.keys(files))
 
   if(files[name]) return name
 
@@ -15,7 +14,6 @@ function resolve(files, name, from, pkg) {
 
   if(main == './')
     return pkg.main || 'index.js'
-
 
   for (var i in extensions) {
     var n = path.normalize(
@@ -30,7 +28,7 @@ function resolve(files, name, from, pkg) {
   }
 }
 
-function package (files, parent) {
+module.exports = function package (files, parent) {
   var node_modules = {}
   var cache = {}
   if(!files)
@@ -40,29 +38,26 @@ function package (files, parent) {
 
   function makeRequire(file) {
     return function (name) {
-      console.log('REQ', name, Object.keys(node_modules))
+
       if(nonRelative(name)) {
         var s = name.split('/')
         var mn = s.shift()
         var rest = './' + s.join('/')
-        console.log('REQUIRE', mn, rest)
-        console.log('node_modules', node_modules)
-        if(node_modules[mn])
-          return node_modules[mn].require(rest)
-        else
-          return parent.require(name)
+        return (
+            node_modules[mn]
+          ? node_modules[mn].require(rest)
+          : parent.require(name)
+        )
       }
       
       var fname = resolve(files, name, file, pkg)
-      console.log('-->', fname)
+
       if(fname)
         return cache[fname] = makeFile(files[fname], fname)
 
       if(!parent)
         throw new Error('cannot find module: ' 
                        + JSON.stringify(name))
-
-//      parent.require(name)
     }
   }
 
@@ -81,28 +76,6 @@ function package (files, parent) {
     },
     //just for loading from the outside...
     require: makeRequire('./package.json')
-
-
- /*function (name) {
-      if(name == './' || !name)
-        name = pkg.main || 'index'
-      var load = resolve(files, name, './package.json')
-
-      if(!load) {
-        if(!parent)
-          throw new Error('cannot find module:'+name)
-        return parent.require(name)
-      }
-
-      if(cache[load])
-        return cache[load]
-      
-      return cache[name] = makeFile(files[load], load)
-    }*/
   }
-}
-
-if('undefined' !== typeof module) {
-  return module.exports = package
 }
 
