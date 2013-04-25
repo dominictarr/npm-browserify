@@ -1,0 +1,23 @@
+{
+  "name": "npm-browserify",
+  "description": "",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dominictarr/npm-browserify",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dominictarr/npm-browserify.git"
+  },
+  "dependencies": {
+    "module-deps": "git://github.com/dominictarr/module-deps.git",
+    "duplexer": "~0.1.0",
+    "streamify": "~0.2.0",
+    "through": "~2.3.2",
+    "tape": "~0.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "set -e; for t in test/*.js; do node $t; done"
+  },
+  "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
+  "license": "MIT"
+}
